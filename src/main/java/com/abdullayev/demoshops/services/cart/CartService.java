@@ -1,0 +1,38 @@
+package com.abdullayev.demoshops.services.cart;
+
+import com.abdullayev.demoshops.exceptions.CartNotFoundException;
+import com.abdullayev.demoshops.models.Cart;
+import com.abdullayev.demoshops.repositories.CartItemRepository;
+import com.abdullayev.demoshops.repositories.CartRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+
+@RequiredArgsConstructor
+@Service
+public class CartService implements ICartService {
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+
+    @Override
+    public Cart getCart(Long id) {
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new CartNotFoundException("Cart not found!"));
+        BigDecimal totalAmount = cart.getTotalAmount();   // ??????????????
+        cart.setTotalAmount(totalAmount);                 // ??????????????
+        return cartRepository.save(cart);                 // ??????????????
+    }
+
+    @Override
+    public void clearCart(Long id) {
+        cartItemRepository.deleteAllByCartId(id);
+        getCart(id).getItems().clear();
+        cartRepository.deleteById(id);
+    }
+
+    @Override
+    public BigDecimal getTotalPrice(Long id) {
+        return getCart(id).getTotalAmount();
+    }
+}
