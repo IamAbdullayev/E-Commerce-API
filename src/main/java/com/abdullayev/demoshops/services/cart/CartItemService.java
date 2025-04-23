@@ -80,6 +80,6 @@ public class CartItemService implements ICartItemService {
         return cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst()
-                .orElseThrow(() -> new CartItemNotFoundException("Product not found!"));
+                .orElseThrow(() -> new CartItemNotFoundException("CartItem not found!"));
     }
 }
