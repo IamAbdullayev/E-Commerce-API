@@ -40,6 +40,7 @@ public class CartItemService implements ICartItemService {
             cartItem.setQuantity(quantity);
         } else {
             cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setUnitPrice(product.getPrice());
         }
         cartItem.setTotalPrice();
         cart.addItem(cartItem);
@@ -60,17 +61,17 @@ public class CartItemService implements ICartItemService {
     @Override
     public void updateItemQuantity(Long cardId, Long productId, Integer quantity) {
         Cart cart = cartService.getCart(cardId);
-        cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst()
-                .ifPresent(item -> {
-                    item.setQuantity(quantity);
-                    item.setUnitPrice(item.getProduct().getPrice());
-                    item.setTotalPrice();
-                });
+        CartItem cartItem = getCartItem(cardId, productId);
 
-        BigDecimal totalAmount = cart.getTotalAmount();   // ????????????
-        cart.setTotalAmount(totalAmount);                 // ????????????
+        cartItem.setQuantity(quantity);
+        cartItem.setUnitPrice(cartItem.getProduct().getPrice());
+        cartItem.setTotalPrice();
+
+        BigDecimal totalAmount = cart.getItems().stream()
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        cart.setTotalAmount(totalAmount);
+
         cartRepository.save(cart);
     }
 

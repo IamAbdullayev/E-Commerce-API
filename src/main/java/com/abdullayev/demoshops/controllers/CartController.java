@@ -1,5 +1,6 @@
 package com.abdullayev.demoshops.controllers;
 
+import com.abdullayev.demoshops.dto.CartDto;
 import com.abdullayev.demoshops.exceptions.CartNotFoundException;
 import com.abdullayev.demoshops.models.Cart;
 import com.abdullayev.demoshops.responses.ApiResponse;
@@ -23,7 +24,8 @@ public class CartController {
     public ResponseEntity<ApiResponse> getCart(@PathVariable Long cartId) {
         try {
             Cart cart = cartService.getCart(cartId);
-            return ResponseEntity.ok(new ApiResponse("Success!", cart));
+            CartDto cartDto = cartService.covertToDto(cart);
+            return ResponseEntity.ok(new ApiResponse("Success!", cartDto));
         } catch (CartNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         } catch (Exception e) {
