@@ -3,6 +3,8 @@ package com.abdullayev.demoshops.controllers;
 import com.abdullayev.demoshops.exceptions.CartItemNotFoundException;
 import com.abdullayev.demoshops.exceptions.CartNotFoundException;
 import com.abdullayev.demoshops.exceptions.ProductNotFoundException;
+import com.abdullayev.demoshops.models.Cart;
+import com.abdullayev.demoshops.models.User;
 import com.abdullayev.demoshops.responses.ApiResponse;
 import com.abdullayev.demoshops.services.cart.ICartItemService;
 import com.abdullayev.demoshops.services.cart.ICartService;
@@ -21,13 +23,13 @@ public class CartItemController {
     private final ICartService cartService;
 
     @PostMapping("/item/add")
-    public ResponseEntity<ApiResponse> addItemToCart(@RequestParam(required = false) Long cartId,
-                                                     @RequestParam Long productId,
+    public ResponseEntity<ApiResponse> addItemToCart(@RequestParam Long productId,
                                                      @RequestParam Integer quantity) {
 
         try {
-            if (cartId == null) { cartId = cartService.initializeNewCart(); }
-            cartItemService.addItemToCart(cartId, productId, quantity);
+            User user = new User();
+            Cart cart = cartService.initializeNewCart(user);
+            cartItemService.addItemToCart(cart.getId(), productId, quantity);
             return ResponseEntity.ok(new ApiResponse("Item Added Successfully", null));
         } catch (CartNotFoundException | ProductNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)

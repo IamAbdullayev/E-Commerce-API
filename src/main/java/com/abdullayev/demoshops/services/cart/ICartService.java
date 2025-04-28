@@ -2,6 +2,7 @@ package com.abdullayev.demoshops.services.cart;
 
 import com.abdullayev.demoshops.dto.CartDto;
 import com.abdullayev.demoshops.models.Cart;
+import com.abdullayev.demoshops.models.User;
 
 import java.math.BigDecimal;
 
@@ -10,7 +11,9 @@ public interface ICartService {
     void clearCart(Long id);
     BigDecimal getTotalPrice(Long id);
 
-    Long initializeNewCart();
+    Cart initializeNewCart(User user);
 
     CartDto covertToDto(Cart cart);
+
+    Cart getCartByUserId(Long userId);
 }
