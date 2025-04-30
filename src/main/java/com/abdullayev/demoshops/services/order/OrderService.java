@@ -2,6 +2,7 @@ package com.abdullayev.demoshops.services.order;
 
 import com.abdullayev.demoshops.dto.OrderDto;
 import com.abdullayev.demoshops.enums.OrderStatus;
+import com.abdullayev.demoshops.exceptions.EmptyCartException;
 import com.abdullayev.demoshops.exceptions.OrderNotFoundException;
 import com.abdullayev.demoshops.models.Cart;
 import com.abdullayev.demoshops.models.Order;
@@ -18,6 +19,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,9 +34,11 @@ public class OrderService implements IOrderService {
     public OrderDto placeOrder(Long userId) {
         Cart cart = cartService.getCartByUserId(userId);
         Order order = createOrder(cart);
-        List<OrderItem> orderItems = createOrderItems(order, cart);
-
-        order.setItems(new HashSet<>(orderItems));
+        Set<OrderItem> orderItems = createOrderItems(order, cart);
+        if (orderItems.isEmpty()) {
+            throw new EmptyCartException("Cannot place order with empty cart");
+        }
+        order.setItems(orderItems);
         order.setTotalAmount(calculateTotalAmount(orderItems));
         Order savedOrder = orderRepository.save(order);
         cartService.clearCart(cart.getId());
@@ -49,20 +54,21 @@ public class OrderService implements IOrderService {
         return order;
     }
 
-    private List<OrderItem> createOrderItems(Order order, Cart cart) {
-        return cart.getItems().stream().map(cartItem -> {
-                  Product product = cartItem.getProduct();
-                  product.setInventory(product.getInventory() - cartItem.getQuantity());
-                  productRepository.save(product);
-                  return new OrderItem(
-                          order,
-                          product,
-                          cartItem.getQuantity(),
-                          cartItem.getUnitPrice());
-        }).toList();
+    private Set<OrderItem> createOrderItems(Order order, Cart cart) {
+        return cart.getItems().stream()
+                .map(cartItem -> {
+                    Product product = cartItem.getProduct();
+                    product.setInventory(product.getInventory() - cartItem.getQuantity());
+                    productRepository.save(product);
+                    return new OrderItem(
+                            order,
+                            product,
+                            cartItem.getQuantity(),
+                            cartItem.getUnitPrice());
+                }).collect(Collectors.toSet());
     }
 
-    private BigDecimal calculateTotalAmount(List<OrderItem> orderItemList) {
+    private BigDecimal calculateTotalAmount(Set<OrderItem> orderItemList) {
         return orderItemList.stream()
                 .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -78,9 +84,7 @@ public class OrderService implements IOrderService {
     @Override
     public List<OrderDto> getOrdersByUserId(Long userId) {
         List<Order> orders = orderRepository.findByUser_Id(userId);
-        return orders.stream()
-                .map(this::convertToDto)
-                .toList();
+        return orders.stream().map(this::convertToDto).toList();
     }
 
     @Override

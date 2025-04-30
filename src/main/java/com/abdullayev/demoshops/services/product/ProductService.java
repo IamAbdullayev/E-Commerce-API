@@ -2,6 +2,7 @@ package com.abdullayev.demoshops.services.product;
 
 import com.abdullayev.demoshops.dto.ImageDto;
 import com.abdullayev.demoshops.dto.ProductDto;
+import com.abdullayev.demoshops.exceptions.AlreadyExistsException;
 import com.abdullayev.demoshops.exceptions.ProductNotFoundException;
 import com.abdullayev.demoshops.models.Category;
 import com.abdullayev.demoshops.models.Image;
@@ -34,16 +35,20 @@ public class ProductService implements IProductService{
         // If No, the save it as a new product
         // The set as the new product category
 
+        if (productExists(request.getBrand(), request.getName())) {
+            throw new AlreadyExistsException(request.getBrand() + " " + request.getName() + " already exists, you may update with method instead!");
+        }
+
         Category category = Optional.ofNullable(categoryService.getCategoryByName(request.getCategory().getName()))
                .orElseGet(()-> categoryService.addCategory(new AddCategoryRequest(request.getCategory().getName())));
         request.setCategory(category);
-        return productRepository.save(createProduct(request, category));
 
-//        Category category = categoryService.getCategoryByName(request.getCategory().getName());
-//        if (category == null) {
-//            category = categoryService.addCategory(new AddCategoryRequest(request.getCategory().getName()));
-//        }
-//        return productRepository.save(createProduct(request, category));
+
+        return productRepository.save(createProduct(request, category));
+    }
+
+    private Boolean productExists(String brand, String name) {
+        return productRepository.existsByBrandAndName(brand, name);
     }
 
     private Product createProduct(AddProductRequest request, Category category) {
@@ -53,9 +58,9 @@ public class ProductService implements IProductService{
                 request.getPrice(),
                 request.getInventory(),
                 request.getDescription(),
-                category
-        );
+                category);
     }
+
 
     @Override
     public Product updateProduct(UpdateProductRequest request, Long productId) {
@@ -88,12 +93,6 @@ public class ProductService implements IProductService{
 
     @Override
     public void deleteProductById(Long id) {
-//        СТАРЫЙ СПОСОБ
-//        Product product = productRepository.findById(id)
-//                .orElseThrow(() -> new ProductNotFoundException("Product not found!"));
-//        productRepository.delete(product);
-
-        // Более современный способ
         productRepository.findById(id).ifPresentOrElse(
                 productRepository::delete,
                 ()-> { throw new ProductNotFoundException("Product not found!"); }

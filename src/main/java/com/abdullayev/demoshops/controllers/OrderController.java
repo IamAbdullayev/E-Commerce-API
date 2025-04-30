@@ -2,9 +2,9 @@ package com.abdullayev.demoshops.controllers;
 
 
 import com.abdullayev.demoshops.dto.OrderDto;
+import com.abdullayev.demoshops.exceptions.EmptyCartException;
 import lombok.RequiredArgsConstructor;
 import com.abdullayev.demoshops.exceptions.OrderNotFoundException;
-import com.abdullayev.demoshops.models.Order;
 import com.abdullayev.demoshops.responses.ApiResponse;
 import com.abdullayev.demoshops.services.order.IOrderService;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 
 @RequiredArgsConstructor
@@ -27,6 +26,8 @@ public class OrderController {
         try {
             OrderDto order = orderService.placeOrder(userId);
             return ResponseEntity.ok(new ApiResponse("Success!", order));
+        } catch (EmptyCartException e) {
+            return ResponseEntity.status(NOT_ACCEPTABLE).body(new ApiResponse(e.getMessage(), null));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Something went wrong!", e.getMessage()));
         }

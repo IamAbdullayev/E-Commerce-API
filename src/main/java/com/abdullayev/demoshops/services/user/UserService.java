@@ -20,9 +20,8 @@ public class UserService implements IUserService {
     private final ModelMapper modelMapper;
 
     @Override
-    public UserDto getUserById(Long userId) {
+    public User getUserById(Long userId) {
         return userRepository.findById(userId)
-                .map(this :: convertToDto)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 
@@ -37,7 +36,7 @@ public class UserService implements IUserService {
                     user.setEmail(request.getEmail());
                     user.setPassword(request.getPassword());
                     return convertToDto(userRepository.save(user));
-                }).orElseThrow(() -> new AlreadyExistsException("User with this email: \"" + request.getEmail() + "\" already exist!"));
+                }).orElseThrow(() -> new AlreadyExistsException("User with this email: '" + request.getEmail() + "' already exist!"));
     }
 
     @Override

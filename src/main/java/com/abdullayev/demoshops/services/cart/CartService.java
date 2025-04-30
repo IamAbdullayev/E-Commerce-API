@@ -30,21 +30,6 @@ public class CartService implements ICartService {
         return cartRepository.save(cart);                 // ??????????????
     }
 
-    @Transactional
-    @Override
-    public void clearCart(Long id) {
-        Cart cart = getCart(id);
-        cartItemRepository.deleteAllByCartId(id);
-        cart.getItems().clear();
-        cartRepository.deleteById(id);
-    }
-
-    @Override
-    public BigDecimal getTotalPrice(Long id) {
-        Cart cart = getCart(id);
-        return cart.getTotalAmount();
-    }
-
     @Override
     public Cart initializeNewCart(User user) {
         return Optional.ofNullable(getCartByUserId(user.getId()))
@@ -53,6 +38,23 @@ public class CartService implements ICartService {
                     cart.setUser(user);
                     return cartRepository.save(cart);
                 });
+    }
+
+    @Transactional
+    @Override
+    public void clearCart(Long id) {
+        Cart cart = getCart(id);
+        cartItemRepository.deleteAllByCartId(id);
+        cart.getItems().clear();
+        cart.setTotalAmount(BigDecimal.ZERO);
+//        cart.getUser().setCart(null); // If we want to delete cart from database
+        cartRepository.deleteById(id);
+    }
+
+    @Override
+    public BigDecimal getTotalPrice(Long id) {
+        Cart cart = getCart(id);
+        return cart.getTotalAmount();
     }
 
     @Override

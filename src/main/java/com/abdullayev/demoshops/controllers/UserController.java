@@ -24,8 +24,9 @@ public class UserController {
     @GetMapping("/{userId}/user")
     public ResponseEntity<ApiResponse> getUserById(@PathVariable Long userId) {
         try {
-            UserDto user = userService.getUserById(userId);
-            return ResponseEntity.ok(new ApiResponse("User found!", user));
+            User user = userService.getUserById(userId);
+            UserDto userDto = userService.convertToDto(user);
+            return ResponseEntity.ok(new ApiResponse("User found!", userDto));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         } catch (Exception e) {
