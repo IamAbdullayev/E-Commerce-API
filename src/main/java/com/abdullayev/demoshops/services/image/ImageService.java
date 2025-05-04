@@ -29,39 +29,39 @@ public class ImageService implements IImageService {
         List<ImageDto> savedImagesDto = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            Image savedImage = imageRepository.save(createImage(file, product));
-
-            savedImage.setDownloadUrl("/api/v1/images/image/download/" + savedImage.getId());
-            imageRepository.save(savedImage);
-
-            savedImagesDto.add(createImageDto(savedImage));
+            Image savedImage = createImage(file, product);
+            savedImagesDto.add(convertToDto(savedImage));
         }
 
         return savedImagesDto;
     }
 
+
     private Image createImage(MultipartFile file, Product product) {
-        Image image = new Image();
         try {
+            Image image = new Image();
             image.setFileName(file.getOriginalFilename());
             image.setFileType(file.getContentType());
             image.setImage(new SerialBlob(file.getBytes()));
             image.setProduct(product);
+            product.getImages().add(image);
 
+            Image savedImage = imageRepository.save(image);
             String buildDownloadUrl = "/api/v1/images/image/download/";
-            String downloadUrl = buildDownloadUrl + image.getId();
-            image.setDownloadUrl(downloadUrl);
+            String downloadUrl = buildDownloadUrl + savedImage.getId();
+            savedImage.setDownloadUrl(downloadUrl);
+
+            return imageRepository.save(savedImage);
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e.getMessage());
         }
-        return image;
     }
 
-    private ImageDto createImageDto(Image savedImage) {
+    private ImageDto convertToDto(Image image) {
         ImageDto imageDto = new ImageDto();
-        imageDto.setId(savedImage.getId());
-        imageDto.setFileName(savedImage.getFileName());
-        imageDto.setDownloadUrl(savedImage.getDownloadUrl());
+        imageDto.setId(image.getId());
+        imageDto.setFileName(image.getFileName());
+        imageDto.setDownloadUrl(image.getDownloadUrl());
         return imageDto;
     }
 
