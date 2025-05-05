@@ -20,12 +20,27 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class CartController {
     private final ICartService cartService;
 
+    /*
     @GetMapping("/{cartId}")
     public ResponseEntity<ApiResponse> getCart(@PathVariable Long cartId) {
         try {
             Cart cart = cartService.getCart(cartId);
             CartDto cartDto = cartService.covertToDto(cart);
             return ResponseEntity.ok(new ApiResponse("Success!", cartDto));
+        } catch (CartNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal Server Error", null));
+        }
+    }
+    */
+
+    @GetMapping("/user/{userId}/my-cart")
+    public ResponseEntity<ApiResponse> getUserCart(@PathVariable Long userId) {
+        try {
+            Cart cart = cartService.getCartByUserId(userId);
+            CartDto cartDto = cartService.convertToDto(cart);
+            return ResponseEntity.ok(new ApiResponse("Success", cartDto));
         } catch (CartNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         } catch (Exception e) {

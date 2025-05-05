@@ -13,7 +13,7 @@ public interface ICartService {
 
     Cart initializeNewCart(User user);
 
-    CartDto covertToDto(Cart cart);
+    CartDto convertToDto(Cart cart);
 
     Cart getCartByUserId(Long userId);
 }
