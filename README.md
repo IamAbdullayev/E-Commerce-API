@@ -72,13 +72,13 @@ This layer exposes REST API endpoints to handle HTTP requests. The controllers m
 The service layer contains business logic and orchestrates data flow between controllers and repositories. It ensures validation, transactional integrity, and complex operations, such as order processing and cart management, are handled properly. This layer is completely implemented.
 
 3. Models - 
-Entity classes represent database tables for users, products, orders, carts, categories, images, and roles. These models form the data foundation and include necessary JPA annotations. The user authentication-related models are in progress.
+Entity classes represent database tables for users, products, orders, carts, categories, images, and roles. These models form the data foundation and include necessary JPA annotations.
 
 4. Repositories - 
-Spring Data JPA repositories provide CRUD operations and custom queries for all entities. Most repositories are implemented, except those connected to the authentication subsystem, which are still being developed.
+Spring Data JPA repositories provide CRUD operations and custom queries for all entities. All repositories are implemented.
 
 5. DTOs (Data Transfer Objects) - 
-DTOs facilitate data exchange between the client and server by abstracting entity details and controlling payload structure. Implementation has started, particularly for authentication-related endpoints.
+DTOs facilitate data exchange between the client and server by abstracting entity details and controlling payload structure. This module is completed.
 
 6. Requests and Responses - 
 These packages contain classes that define the structure of API request bodies and response payloads respectively, improving code clarity and client communication. They are fully developed.
