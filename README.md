@@ -1,8 +1,6 @@
 
 # E-Commerce API
-
-A robust backend system for an e-commerce platform developed using **Java**, **Spring Boot**, **Spring Security**, and **Spring Data JPA**. 
-This project handles user registration, authentication, product management, and order processing — all through RESTful APIs.
+The E-Commerce-API is a comprehensive backend service for an online store called Dream Shops. Built using Java and Spring Boot, this RESTful API supports all core functionalities required to operate an e-commerce platform. The project is modularized into several key packages to organize the codebase clearly and efficiently. (The payment system is currently under development.)
 
 ## 🧩 Features
 
@@ -19,7 +17,6 @@ This project handles user registration, authentication, product management, and 
 - **Frameworks:** Spring Boot, Spring Security, Spring Data JPA  
 - **Database:** MySQL  
 - **Build Tool:** Maven  
-- **Containerization:** Docker  
 - **Other Tools:** Git, Postman, Lombok
 
 ## 🔐 Authentication
@@ -33,15 +30,77 @@ Authorization: Bearer <token>
 ## 📂 Project Structure
 
 ```
-src
-├── config         # Security configuration
-├── controller     # REST controllers
-├── dto            # Data transfer objects
-├── entity         # JPA entities
-├── repository     # Spring Data JPA repositories
-├── service        # Business logic layer
-└── util           # Utility classes
+E-Commerce-API-main/
+├── .gitattributes
+├── .gitignore
+├── README.md
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── .mvn/
+│   └── wrapper/
+│       └── maven-wrapper.properties
+└── src/
+    └── main/
+        ├── java/
+        │   └── com/
+        │       └── abdullayev/
+        │           └── demoshops/
+        │               ├── DemoShopsApplication.java
+        │               ├── controllers/           # REST API controllers
+        │               ├── data/                  # Data initialization 
+        │               ├── dto/                   # Data transfer objects 
+        │               ├── enums/                 # Enums 
+        │               ├── exceptions/            # Custom exceptions 
+        │               ├── models/                # Entity models
+        │               ├── repositories/          # Repositories 
+        │               ├── requests/              # Request payload classes 
+        │               ├── responses/             # Response payload classes 
+        │               ├── security/              # Spring Security config & classes 
+        │               └── services/              # Business logic services 
+        └── resources/
+            └── application.properties
+
 ```
+
+# Project Functionality Overview
+Core Functional Areas
+1. Controllers - 
+This layer exposes REST API endpoints to handle HTTP requests. The controllers manage product listings, user operations, orders, carts, categories, images, and authentication. Most controllers are fully implemented, providing secure and efficient interfaces for frontend consumption.
+
+2. Services - 
+The service layer contains business logic and orchestrates data flow between controllers and repositories. It ensures validation, transactional integrity, and complex operations, such as order processing and cart management, are handled properly. This layer is completely implemented.
+
+3. Models - 
+Entity classes represent database tables for users, products, orders, carts, categories, images, and roles. These models form the data foundation and include necessary JPA annotations. The user authentication-related models are in progress.
+
+4. Repositories - 
+Spring Data JPA repositories provide CRUD operations and custom queries for all entities. Most repositories are implemented, except those connected to the authentication subsystem, which are still being developed.
+
+5. DTOs (Data Transfer Objects) - 
+DTOs facilitate data exchange between the client and server by abstracting entity details and controlling payload structure. Implementation has started, particularly for authentication-related endpoints.
+
+6. Requests and Responses - 
+These packages contain classes that define the structure of API request bodies and response payloads respectively, improving code clarity and client communication. They are fully developed.
+
+7. Exceptions - 
+Custom exceptions handle specific error cases like entity not found, invalid input, or authentication errors. A global exception handler manages consistent API error responses.
+
+8. Security - 
+The security package configures Spring Security to enable authentication and authorization. It implements JWT token handling, password encoding, and role-based access control to secure the API endpoints. This module is completed.
+
+9. Data Initialization - 
+The data package includes scripts and classes for preloading sample data into the database during application startup. It also partially supports authentication data setup.
+
+Summary
+ - The E-Commerce-API project delivers a fully functional backend with clean architecture, supporting:
+ - User registration, login, and role management
+ - Product catalog management with categories and images
+ - Shopping cart functionality with item management
+ - Order processing and status tracking
+ - Secure API access through JWT-based authentication and authorization
+
+
 
 ## 🚀 Getting Started
 
